@@ -1,0 +1,15 @@
+__pycache__
+venv
+Makefile
+README.md
+.gitignore
+secrets
+vault
+misc_files
+nginx
+pgp_config
+*.example.sh
+*.example.yaml
+*.example.yml
+docker-compose*.
+Dockerfile

@@ -1,0 +1,16 @@
+services:
+  flask-app:
+    container_name: ${APPLICATION_NAME}.${APP_ENV}
+    image: ${REGISTRY}/${PROJECT_ID}/${REPOSITORY_NAME}/${APPLICATION_NAME}-flask-service:${APPLICATION_VERSION}
+    restart: always
+    entrypoint: ["/bin/bash", "-c", "bash ${RUN_SCRIPT}"]
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      PORT: ${PORT}
+      HOSTNAME: ${HOSTNAME}
+      APP_ENV: ${APP_ENV}
+    networks:
+      - default
+networks:
+  default:

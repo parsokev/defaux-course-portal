@@ -1,0 +1,73 @@
+services:
+  flask-app:
+    container_name: ${APPLICATION_NAME}.${APP_ENV}
+    build:
+      args:
+        USER: ${USER}
+        GROUP: ${GROUP}
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
+        PORT: ${PORT}
+        RUN_SCRIPT: ${RUN_SCRIPT}
+        APP_ENV: ${APP_ENV}
+      context: .
+      target: debian-prod-runner
+    restart: always
+    depends_on:
+      - vault-store
+      - nginx-app-proxy-server
+    entrypoint: ["/bin/bash", "-c", "bash ${RUN_SCRIPT}"]
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./secrets/${VAULT_CREDS_FILENAME}:/usr/src/app/secrets/${VAULT_CREDS_FILENAME}:ro
+      - ./pgp_config/img_keys:/usr/src/app/pgp_config/img_keys:ro
+      - ./vault/certs:/usr/src/app/vault/certs/:ro
+
+    environment:
+      PORT: ${PORT}
+      HOSTNAME: ${HOSTNAME}
+      APP_ENV: ${APP_ENV}
+    networks:
+      - default
+
+  vault-store:
+    image: hashicorp/vault
+    container_name: vault-store
+    environment:
+      VAULT_ADDR: "${VAULT_ADDR}"
+      VAULT_API_ADDR: "${VAULT_API_ADDR}"
+      VAULT_ADDRESS: "${VAULT_ADDRESS}"
+      VAULT_SKIP_VERIFY: ${VAULT_SKIP_VERIFY}"
+
+    restart: always
+    ports:
+      - "${VAULT_PORT}:${VAULT_PORT}"
+      - "${VAULT_CLUSTER_PORT}:${VAULT_CLUSTER_PORT}"
+    networks:
+        - default
+    volumes:
+      - ./vault/logs:/vault/logs/:rw
+      - ./vault/data:/vault/data/:rw
+      - ./vault/config:/vault/config/:rw
+      - ./vault/certs:/certs/:rw
+      - ./vault/file:/vault/file/:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+    cap_add:
+      - IPC_LOCK
+    entrypoint: "vault server -config ./vault/config/config.hcl"
+
+  nginx-app-proxy-server:
+    restart: always
+    image: nginx:latest
+    container_name: nginx-app-proxy-server.${APP_ENV}
+    volumes:
+      - ${PWD}/nginx/production.conf:/etc/nginx/nginx.conf:ro
+      - ${PWD}/vault/certs/${VAULT_CERT_FILENAME}:/etc/ssl/certs/${VAULT_CERT_FILENAME}:ro
+      - ${PWD}/vault/certs/${VAULT_CERT_KEY_FILENAME}:/etc/ssl/private/${VAULT_CERT_KEY_FILENAME}:ro
+    ports:
+      - "${EXTERNAL_PROXY_PORT}:${INTERNAL_PROXY_PORT}"
+      - "443:443"
+networks:
+  default:
+

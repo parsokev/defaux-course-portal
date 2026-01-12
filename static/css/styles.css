@@ -1,0 +1,221 @@
+body {
+    background-color: lightsteelblue;
+    font-family: Arial, Helvetica, sans-serif;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    margin: auto 10%;
+    width: 80%;
+    letter-spacing: 1px;
+    text-align:center;
+    vertical-align: middle;
+}
+ /* styling for headings */
+h1{
+    text-align: center;
+    padding: 10px;
+    color:black;
+}
+
+ /* styling for headings */
+ h2, h3, h4, h5 {
+    text-align: center;
+    padding: 10px;
+    color:black;
+}
+
+/* styling for table elements */
+table {
+    align-content: center;
+    border-style: solid;
+    border-color: black;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    vertical-align: auto;
+}
+    
+td {
+    size: 40px;
+    padding: 8px;
+    
+    text-align: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    letter-spacing: 1px;
+}
+
+td,tr {
+    border: solid #a1a0a0;
+    color: rgb(31, 63, 63);
+    letter-spacing: 1px;
+    background: rgb(255, 255, 255);
+}
+
+th {
+    padding: 12px;
+    text-align: center;
+    background-color: #05583a;
+    color: white;
+    border: solid #a1a0a0;
+
+}
+
+ /* form styling */
+
+form {
+    color: rgb(28, 32, 28);
+    padding-top: 5px;
+    padding-bottom: 5px;
+    position: relative;
+    size: 30px;
+    display: inline-block;
+}
+
+/* styling for controlling size of different types of input elements according to content */
+
+button:hover{
+    background-color: rgb(247, 247, 247);
+}
+
+input, select {
+    padding-bottom: 4px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    text-align: center;
+}
+
+ /* styling for repeating body elements */
+a {
+    display: inline-block;
+    font-family:Arial, Helvetica, sans-serif;
+    letter-spacing: 1px;
+    text-align: center;
+    vertical-align: auto;
+}
+
+p {
+    position: relative;
+    margin: 10px;
+    padding: 20px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    color:black;
+}
+
+
+
+fieldset {
+    margin-left: auto;
+    margin-right:auto;
+    width: 80%;
+    border: solid black;
+    vertical-align: auto;
+    display: inline-block;
+    color:navy;
+    border-radius: 3px;
+}
+
+label {
+    color:darkblue;
+}
+
+header {
+    padding: 25px;
+    top: 50px;
+    margin: 25px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* text-align: center; */
+}
+
+button {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#error-code-msg {
+    color: brown;
+}
+
+#error-msg {
+color: brown;
+}
+
+ul li {
+    margin-left: auto;
+    margin-right:auto;
+
+    vertical-align: auto;
+    display: inline-block;
+    border-radius: 3px;
+}
+
+#course-link-item {
+    padding: 0px;
+    border: solid 1px slategrey;
+    width: 80%;
+}
+
+#user-info-item, #student-info-item {
+    border: solid 1px slategrey;
+    width: 80%;
+}
+
+#course-info-item {
+    border: solid 1px slategrey;
+    width: 30%;
+}
+
+#avatar-block {
+    width: 100%;
+}
+
+#add-course-table {
+    display: none;
+}
+
+#edit-course-table {
+    display: none;
+}
+
+.pagination, .page-item, .page-link {
+    display: inline-block;
+    font-family:Arial, Helvetica, sans-serif;
+    text-align: center;
+    vertical-align: auto;
+}
+
+.flash {
+    padding: 20px;
+    margin: 20px;
+}
+
+.flash.user-log-out-success, .flash.add-course-success, .flash.updated-course-success, .flash.new-account-creation-success-msg,
+.flash.update-avatar-success, .flash.updated-user-success {
+    background-color:aquamarine;
+    color:black;
+}
+
+
+.flash.forbidden-user-error, .flash.unauthorized-user-error, .flash.bad-request-user-avatar-error, .flash.delete-course-success,
+.flash.avatar-not-found-error, .flash.user-not-found-error, .flash.bad-request-user-error, .flash.bad-request-add-course-error,
+.flash.not-found-course-error, .flash.bad-request-update-course-error, .flash.unexpected-error, .flash.student-enrollment-request-conflict-error {
+    background-color: crimson;
+    color:black;
+}
+
+#password-match-msg {
+    display: none;
+    color: red;
+}
+
+#search-select-form, #term-select-form, #subject-select-form, #instructor-select-form {
+    width: 100%;
+}
+
+dialog[open] {
+    display: inline-block;
+    font-family:Arial, Helvetica, sans-serif;
+    text-align: center;
+    background-color: aliceblue;
+    vertical-align: auto;
+    color: red;
+    border-radius: 3px;
+}

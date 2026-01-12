@@ -1,0 +1,114 @@
+{
+    "Analysis of Algorithms": {
+        "subject": "CS",
+        "number": "361",
+        "title": "Analysis of Algorithms",
+        "term": "Spring 2024",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Introduction to Databases": {
+        "subject": "CS",
+        "number": "340",
+        "title": "Introduction to Databases",
+        "term": "Fall 2023",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Introduction to Computer Networks": {
+        "subject": "CS",
+        "number": "372",
+        "title": "Introduction to Computer Networks",
+        "term": "Winter 2025",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Software Engineering II": {
+        "subject": "CS",
+        "number": "394",
+        "title": "Software Engineering II",
+        "term": "Summer 2024",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Data Structures": {
+        "subject": "CS",
+        "number": "271",
+        "title": "Data Structures",
+        "term": "Spring 2025",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Software Engineering I": {
+        "subject": "CS",
+        "number": "374",
+        "title": "Software Engineering I",
+        "term": "Fall 2024",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Discrete Mathematics": {
+        "subject": "MTH",
+        "number": "125",
+        "title": "Discrete Mathematics",
+        "term": "Winter 2024",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Organic Chemistry II": {
+        "subject": "CHEM",
+        "number": "325",
+        "title": "Organic Chemistry II",
+        "term": "Spring 2024",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Mammalian Genetics": {
+        "subject": "GENE",
+        "number": "315",
+        "title": "Mammalian Genetics",
+        "term": "Fall 2023",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Biochemistry I": {
+        "subject": "BICH",
+        "number": "305",
+        "title": "Biochemistry I",
+        "term": "Fall 2025",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Linear Algebra I": {
+        "subject": "MTH",
+        "number": "362",
+        "title": "Linear Algebra I",
+        "term": "Summer 2024",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Dynamics": {
+        "subject": "EGR",
+        "number": "294",
+        "title": "Dynamics",
+        "term": "Winter 2023",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Biochemistry II": {
+        "subject": "BICH",
+        "number": "365",
+        "title": "Biochemistry II",
+        "term": "Spring 2025",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Statics": {
+        "subject": "EGR",
+        "number": "244",
+        "title": "Statics",
+        "term": "Spring 2024",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Population Genetics": {
+        "subject": "GENE",
+        "number": "325",
+        "title": "Population Genetics",
+        "term": "Summer 2025",
+        "instructor_id": "your-chosen-instructor-user-id"
+    },
+    "Physical Chemistry I": {
+        "subject": "CHEM",
+        "number": "312",
+        "title": "Physical Chemistry I",
+        "term": "Spring 2023",
+        "instructor_id": "your-chosen-instructor-user-id"
+    }
+}

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+export VAULT_ADDR=${VAULT_ADDR}
+export VAULT_API_ADDR=${VAULT_ADDR}
+export VAULT_ADDRESS=${VAULT_ADDR}
+export VAULT_CLUSTER_ADDR=${VAULT_CLUSTER_ADDR}
+export VAULT_SKIP_VERIFY=${VAULT_SKIP_VERIFY}
+
+
+vault server -config=./vault/local/config/config.start.hcl
+
+unset VAULT_ADDR VAULT_API_ADDR VAULT_ADDRESS VAULT_CLUSTER_ADDR VAULT_SKIP_VERIFY

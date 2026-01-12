@@ -1,0 +1,23 @@
+creation_rules:
+  - path_regex: \.(yaml|yml|json|env)$
+    hc_vault_transit_uri: "${EXTERNAL_HOST}:${EXTERNAL_PORT}/v1/sops/keys/crypt-key1"
+    pgp: 
+      - "${PGP_KEY_1_FINGERPRINT}"
+      - "${PGP_KEY_2_FINGERPRINT}"
+      - "${PGP_KEY_3_FINGERPRINT}"
+      - "${PGP_KEY_4_FINGERPRINT}"
+      - "${PGP_KEY_5_FINGERPRINT}"
+      - "${PGP_KEY_6_FINGERPRINT}"
+
+  - path_regex: \.dev\.(yaml|yml|json|env)$
+    hc_vault_transit_uri: "${EXTERNAL_HOST}:${EXTERNAL_PORT}/v1/sops/keys/crypt-key2"
+
+  - path_regex: \.prod\.(yaml|yml|json|env)$
+    hc_vault_transit_uri: "${EXTERNAL_HOST}:${EXTERNAL_PORT}/v1/sops/keys/crypt-key3"
+
+destination_rules:
+  - vault_path: "sops/"
+    vault_kv_mount_name: "dev-secrets/" # default
+    vault_kv_version: 2 # default
+    path_regex: vault/*
+    omit_extensions: true
