@@ -19,18 +19,18 @@ ARG USER
 ARG GROUP
 ARG USER_ID
 ARG GROUP_ID
+ARG RUN_SCRIPT
 
 # Generate a new user with matching group and user IDs for providing read access to mounted files and execution permission for shell scripts
 RUN groupadd -g $GROUP_ID $GROUP && \
     useradd -m -u $USER_ID -g $GROUP $USER
 
-ARG RUN_SCRIPT
-
-# Ensure required application files are accessible by generated container user
+# When running in development mode, the templates, static, main.py, and utils files will be directly mounted on the container
+# to enable runtime detection of changes (allow server reloading on changes)
 COPY --chown=$USER:$GROUP ./${RUN_SCRIPT} ./${RUN_SCRIPT}
 COPY --chown=$USER:$GROUP ./sops/.sops.yaml ./sops/.sops.yaml
 COPY --chown=$USER:$GROUP ./course_sheet.json ./course_sheet.json
-COPY --chown=$USER:$GROUP ./requirements.txt ./requirements.txt
+COPY --chown=$USER:$GROUP ./requirements.local.txt ./requirements.local.txt
 
 
 FROM python:3.13.9-slim-bookworm AS debian-prod-builder
@@ -52,22 +52,27 @@ ARG USER
 ARG GROUP
 ARG USER_ID
 ARG GROUP_ID
+ARG RUN_SCRIPT
 
 # Generate a new user with matching group and user IDs for providing read access to mounted files and execution permission for shell scripts
 RUN groupadd -g $GROUP_ID $GROUP && \
     useradd -m -u $USER_ID -g $GROUP $USER
 
-ARG RUN_SCRIPT
 
-# Ensure required application files are accessible by generated container user
+
+# Ensure only required application files are added to generated container
 COPY --chown=$USER:$GROUP ./${RUN_SCRIPT} ./${RUN_SCRIPT}
 COPY --chown=$USER:$GROUP ./sops/.sops.yaml ./sops/.sops.yaml
 COPY --chown=$USER:$GROUP ./static ./static
 COPY --chown=$USER:$GROUP ./templates ./templates
-COPY --chown=$USER:$GROUP ./utils ./utils
+COPY --chown=$USER:$GROUP ./utils/db_connector.py ./utils/
+COPY --chown=$USER:$GROUP ./utils/vault_connector.py ./utils/
+COPY --chown=$USER:$GROUP ./utils/auth_utils.py ./utils/
+COPY --chown=$USER:$GROUP ./utils/db_utils.py ./utils/
+COPY --chown=$USER:$GROUP ./utils/vc_utils.py ./utils/
 COPY --chown=$USER:$GROUP ./course_sheet.json ./course_sheet.json
 COPY --chown=$USER:$GROUP ./main.py ./main.py
-COPY --chown=$USER:$GROUP ./requirements.txt ./requirements.txt
+COPY --chown=$USER:$GROUP ./requirements.local.txt ./requirements.local.txt
 COPY --chown=$USER:$GROUP ./gunicorn.conf.py ./gunicorn.conf.py
 COPY --chown=$USER:$GROUP ./wsgi.py ./wsgi.py
 
@@ -113,7 +118,7 @@ ENV PORT=$PORT
 COPY --chown=$USER:$GROUP --from=debian-dev-builder /tmp/ ./
 
 # Install all required python libraries as ROOT user
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.local.txt
 
 USER $USER
 EXPOSE $PORT
@@ -163,7 +168,7 @@ ENV PORT=$PORT
 COPY --chown=$USER:$GROUP --from=debian-prod-builder /tmp/ ./
 
 # Install all required python libraries as ROOT user
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.local.txt
 
 USER $USER
 EXPOSE $PORT

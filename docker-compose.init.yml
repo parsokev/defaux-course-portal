@@ -15,11 +15,9 @@ services:
     networks:
         - default
     volumes:
-      - ./vault/local/logs:/vault/logs/:rw
       - ./vault/local/data:/vault/data/:rw
       - ./vault/local/config:/vault/config/:rw
       - ./vault/local/certs:/certs/:rw
-      - ./vault/local/file:/vault/file/:rw
       - /var/run/docker.sock:/var/run/docker.sock
     cap_add:
       - IPC_LOCK
@@ -30,7 +28,7 @@ services:
     image: nginx:latest
     container_name: nginx-vault-proxy-server-test
     volumes:
-      - ${PWD}/nginx/development.vault.conf:/etc/nginx/conf.d/default.conf:ro
+      - ${PWD}/nginx/development.vault.conf:/etc/nginx/nginx.conf:ro
       - ${PWD}/vault/certs/${VAULT_CERT_FILENAME}:/etc/ssl/certs/${VAULT_CERT_FILENAME}:ro
       - ${PWD}/vault/certs/${VAULT_CERT_KEY_FILENAME}:/etc/ssl/private/${VAULT_CERT_KEY_FILENAME}:ro
     ports:

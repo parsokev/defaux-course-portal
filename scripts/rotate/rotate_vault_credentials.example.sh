@@ -30,7 +30,7 @@ SOPS_CONFIG_FILE=./sops/your-sops-config-filename
 SECRET_MOUNT_PATH=your-enabled-kv-secret-path-name
 SECRET_PATH=path-to-kv-secret-to-accessed-for-key-value-pair-secrets
 
-# Vault Transit secret configuration settings
+# Vault Transit secret configuration settings (leave with default values if not being used)
 TRANSIT_MOUNT_PATH=your-enabled-transit-secret-path
 TRANSIT_KEY=path-to-transit-encryption-key-to-be-applied
 

@@ -69,7 +69,6 @@
                 <button class="btn btn-outline-primary" onclick="editCourse()" type="button">Edit Course</button>
                 {% endif %}
                 {% if is_instructor or ('role' in user and user['role'] == 'admin') %}
-                <!-- <a type="button" class="btn btn-outline-info" href="/courses/{{data['id']}}/students">View Enrollment</a> -->
                 <a type="button" class="btn btn-outline-info" href="{{url_for('get_course_enrollment', course_id=data['id'])}}">View Enrollment</a>
                 {% endif %}
                 {% if 'role' in user and user['role'] == 'admin' %}
@@ -178,14 +177,6 @@
                 setTimeout(() => {document.querySelector("#flash-course-message").remove();}, 6000)
             }
             
-            // "Show the dialog" button opens the <dialog> modally
-
-
-
-            // "Cancel" button closes the dialog without submitting because of [formmethod="dialog"], triggering a close event.
-            // deleteDialog.addEventListener("close", (e) => {
-            //     confirmDelete(deleteDialog.returnValue);
-            // });
             cancelBtn.addEventListener("click", (event) => {
                 event.preventDefault(); // We don't want to submit this fake form
                 deleteDialog.close(event.target.value); // Have to send the select box value here.
@@ -214,29 +205,6 @@
                 
             }
         }
-
-    
-        // function deleteCourse() {
-
-        //     // if (exampleModal) {
-        //     //     exampleModal.addEventListener('show.bs.modal', event => {
-        //     //         // Button that triggered the modal
-        //     //         const button = event.relatedTarget
-        //     //         // Extract info from data-bs-* attributes
-        //     //         const recipient = button.getAttribute('value')
-        //     //         // if (recipient == "Cancel") {
-        //     //         //     showCourseInfo();
-        //     //         // } else if (recipient == "Confirm") {
-        //     //         //     editCourseInfo();
-        //     //         // }
-        //     //         // If necessary, you could initiate an Ajax request here
-        //     //         // and then do the updating in a callback.
-
-        //     //         modalTitle.textContent = `New message to ${recipient}`
-        //     //         modalBodyInput.value = recipient
-        //     //     })
-
-        // }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

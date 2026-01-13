@@ -80,16 +80,6 @@
     {% else %}
     <h2>There are currently no students enrolled in this course!</h2>
     {% endif %}
-    <!-- <div>
-        <div class="row g-3 align-items-right">
-            <div class="d-grid d-md-block">
-                <div class="col">
-                    <label for="display-enrolled-students-table"></label>
-                </div>
-                <button class="btn btn-outline-info" type="button">Add Students</button>
-            </div>
-        </div>
-    </div> -->
 
     <div class="row" id="add-student-table">
         <div class="container">
@@ -101,7 +91,6 @@
                         <label for="course-subject-instructor" class="col-form-label">Course Instructor</label>
                         </div>
                         <select class="form-select" name="selected-student" id="selected-student" placeholder="Select Student to Enroll" required>
-                            <!-- <option selected>Select Student to Enroll</option> -->
                             {% for student in data['students'] %}
                             <option value="{{student['id']}}">{{student['name']}}</option>
                             {% endfor %}
@@ -127,7 +116,6 @@
             if (flaskMessage) {
                 setTimeout(() => {document.querySelector("#flash-course-message").remove();}, 6000)
             }
-            // document.querySelector('#update-enrolled-student-table').display.style = "none";
         })
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

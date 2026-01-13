@@ -114,6 +114,8 @@ db_op.init_db()
 
 # ==================================  TODOS ===========================================
 
+# TODO: Address potential occasional pagination issues when dynamically deleting a course and redirecting to courses page
+# or potential SQL query ordering conflicts (FUTURE)
 
 # TODO: Address additional potential updates to set secrets files access permissions (FUTURE)
 
@@ -179,7 +181,10 @@ def index():
         except AuthError:
             session.clear()
             return render_template('index.j2', logged_in=False)
-        
+
+        if 'sub' not in payload:
+            session.clear()
+            return render_template('index.j2', logged_in=False)
         # Retrieve user with matching authenticated subject from database
         match_user = db_op.check_for_user(str(payload['sub']))
         if match_user is None:
@@ -504,6 +509,7 @@ def handle_login_redirect():
             flash(f"ERROR: {UNAUTHORIZED}. Invalid user credentials recieved. Please retry logging in.", category='unauthorized-user-error')
             session.clear()
             return redirect(url_for('login'), code=301)
+        
         # Retrieve user with matching authenticated subject from database
         match_user = db_op.check_for_user(str(payload['sub']))
         if match_user is None:

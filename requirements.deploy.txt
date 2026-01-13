@@ -1,0 +1,15 @@
+Flask>=3.0.0
+SQLAlchemy>=2.0.24
+PyMySQL>=1.1.1
+gunicorn>=22.0.0
+cloud-sql-python-connector>=1.2.4
+python-jose
+requests
+authlib
+grpcio>=1.62.2
+google-cloud-storage>=2.18.2
+google-auth
+google-auth-oauthlib
+google-cloud-secret-manager
+hvac>=2.4.0
+pyopenssl

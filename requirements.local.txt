@@ -4,7 +4,6 @@ PyMySQL>=1.1.1
 gunicorn>=22.0.0
 cloud-sql-python-connector>=1.2.4
 python-jose
-six
 requests
 authlib
 grpcio>=1.62.2
@@ -12,9 +11,6 @@ google-cloud-storage>=2.18.2
 google-auth
 google-auth-oauthlib
 google-cloud-secret-manager
-flask-talisman
 hvac>=2.4.0
 pyopenssl
-gunicorn
 python-gnupg
-bcrypt

@@ -27,7 +27,7 @@ ALT_TOKEN_CRYPT_KEY=${ALT_TOKEN_CRYPT_KEY}
 SECRET_MOUNT_PATH=${SECRET_MOUNT_PATH}
 SECRET_PATH=${SECRET_PATH}
 
-# Vault Transit secret configuration settings
+# Vault Transit secret configuration settings (leave with default values if not being used)
 TRANSIT_MOUNT_PATH=${TRANSIT_MOUNT_PATH}
 TRANSIT_KEY=${TRANSIT_KEY}
 

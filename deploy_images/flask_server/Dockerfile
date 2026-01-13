@@ -29,13 +29,16 @@ ARG RUN_SCRIPT
 
 # Ensure required application files are accessible by generated container user
 COPY --chown=$USER:$GROUP ./${RUN_SCRIPT} ./${RUN_SCRIPT}
-COPY --chown=$USER:$GROUP ./sops/.sops.yaml ./sops/.sops.yaml
 COPY --chown=$USER:$GROUP ./static ./static
 COPY --chown=$USER:$GROUP ./templates ./templates
-COPY --chown=$USER:$GROUP ./utils ./utils
+COPY --chown=$USER:$GROUP ./utils/db_connector.py ./utils/
+COPY --chown=$USER:$GROUP ./utils/vault_connector.py ./utils/
+COPY --chown=$USER:$GROUP ./utils/auth_utils.py ./utils/
+COPY --chown=$USER:$GROUP ./utils/db_utils.py ./utils/
+COPY --chown=$USER:$GROUP ./utils/vc_utils.py ./utils/
 COPY --chown=$USER:$GROUP ./course_sheet.json ./course_sheet.json
 COPY --chown=$USER:$GROUP ./main.py ./main.py
-COPY --chown=$USER:$GROUP ./requirements.txt ./requirements.txt
+COPY --chown=$USER:$GROUP ./requirements.deploy.txt ./requirements.deploy.txt
 COPY --chown=$USER:$GROUP ./gunicorn.conf.py ./gunicorn.conf.py
 COPY --chown=$USER:$GROUP ./wsgi.py ./wsgi.py
 
@@ -57,11 +60,6 @@ RUN apt-get update && \
 
 WORKDIR /usr/src/app
 
-# Download the SOPS binary from official SOPS git repository, move it to local PATH, and make it executable as ROOT user
-RUN curl -LO https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64 && \
-    mv sops-v3.11.0.linux.amd64 /usr/bin/sops && \
-    chmod +x /usr/bin/sops
-
 ARG USER
 ARG GROUP
 ARG USER_ID
@@ -82,7 +80,7 @@ ENV PORT=$PORT
 COPY --chown=$USER:$GROUP --from=debian-deploy-builder /tmp/ ./
 
 # Install all required python libraries as ROOT user
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.deploy.txt
 
 USER $USER
 EXPOSE $PORT

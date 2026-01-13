@@ -50,11 +50,9 @@ services:
     networks:
         - default
     volumes:
-      - ./vault/logs:/vault/logs/:rw
       - ./vault/data:/vault/data/:rw
       - ./vault/config:/vault/config/:rw
       - ./vault/certs:/certs/:rw
-      - ./vault/file:/vault/file/:rw
       - /var/run/docker.sock:/var/run/docker.sock
     cap_add:
       - IPC_LOCK

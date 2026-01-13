@@ -25,6 +25,7 @@ ALT_TOKEN_CRYPT_KEY=$(cat ./pgp_config/img_keys/your-rawbase64-alt-pgp-public-ke
 # Global file configurations
 ORIGINAL_ENV_FILE=./secrets/your-encrypted-vault-credentials-filename
 SOPS_CONFIG_FILE=./sops/your-sops-config-filename
+CRED_FILE=relative/path/to/the/authorized/service/account/credentials/file
 
 # Vault KV secrets configuation settings
 SECRET_MOUNT_PATH=your-enabled-kv-secret-path-name
@@ -34,9 +35,6 @@ SECRET_PATH=path-to-kv-secret-to-accessed-for-key-value-pair-secrets
 TRANSIT_MOUNT_PATH=your-enabled-transit-secret-path
 TRANSIT_KEY=path-to-transit-encryption-key-to-be-applied
 
-# Local Google Cloud ADC/service account credentials file settings
-CRED_FILE=relative/path/to/the/authorized/service/account/credentials/file
-
 set +o history
 
 exp_envs="VAULT_ADDR=$VAULT_ADDR VAULT_PROXY_ADDR=$VAULT_PROXY_ADDR VAULT_SKIP_VERIFY=$VAULT_SKIP_VERIFY VAULT_CERT_PATH=$VAULT_CERT_PATH VAULT_CERT_KEY_PATH=$VAULT_CERT_KEY_PATH "
@@ -44,7 +42,7 @@ exp_envs+="GPG_HOME=$GPG_HOME UNSEAL_CRYPT_KEY1=$UNSEAL_CRYPT_KEY1 UNSEAL_CRYPT_
 exp_envs+="ALT_UNSEAL_CRYPT_KEY1=$ALT_UNSEAL_CRYPT_KEY1 ALT_UNSEAL_CRYPT_KEY2=$ALT_UNSEAL_CRYPT_KEY2 ALT_UNSEAL_CRYPT_KEY3=$ALT_UNSEAL_CRYPT_KEY3 ALT_TOKEN_CRYPT_KEY=$ALT_TOKEN_CRYPT_KEY "
 exp_envs+="SECRET_MOUNT_PATH=$SECRET_MOUNT_PATH SECRET_PATH=$SECRET_PATH TRANSIT_MOUNT_PATH=$TRANSIT_MOUNT_PATH TRANSIT_KEY=$TRANSIT_KEY "
 exp_envs+="ORIGINAL_ENV_FILE=$ORIGINAL_ENV_FILE SOPS_CONFIG_FILE=$SOPS_CONFIG_FILE CRED_FILE=$CRED_FILE "
-exp_envs+="python -m utils.rotate_app_creds"
+exp_envs+="python -m utils.update_gcp_secrets"
 
 sops --config $SOPS_CONFIG_FILE exec-env $ORIGINAL_ENV_FILE "$exp_envs"
 

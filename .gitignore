@@ -24,6 +24,7 @@ pgp_config/img_keys/*
 /scripts/initialize/vault_startup.sh
 /scripts/rotate/rotate_app_credentials.sh
 /scripts/rotate/rotate_vault_credentials.sh
+/scripts/rotate/update_gcp_secrets.sh
 /scripts/update/populate_update_vars.sh
 /scripts/update/update_user_settings.sh
 /scripts/vault/unseal_vault.sh

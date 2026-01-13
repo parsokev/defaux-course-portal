@@ -7,6 +7,7 @@ export VAULT_HOSTNAME="127.0.0.1"
 export VAULT_ADDR="https://${VAULT_HOSTNAME}:${VAULT_PORT}"
 export VAULT_CLUSTER_ADDR="https://${VAULT_HOSTNAME}:${VAULT_CLUSTER_PORT}"
 export VAULT_SKIP_VERIFY=true
+
 export VAULT_CERT_FILENAME=your-vault-ssl-certificate-filename.pem
 export VAULT_CERT_KEY_FILENAME=your-vault-ssl-certificate-key-filename.pem
 
@@ -31,7 +32,9 @@ env_sub_vars+='${VAULT_TEXT_FILE} ${VAULT_JSON_FILE} ${VAULT_ENV_FILE} ${TMP_FIL
 env_sub_vars+='${PGP_KEY_1_FILE} ${PGP_KEY_2_FILE} ${PGP_KEY_3_FILE} ${PGP_KEY_4_FILE} ${ENV_ENC_FINGERPRINT} ${SOPS_CONFIG_FILE}'
 
 envsubst "$env_sub_vars" < ./scripts/initialize/initialize_vault.template.sh > ./scripts/initialize/initialize_vault.sh
-envsubst "$env_sub_vars" < ./vault/local/config/config.template.hcl > ./vault/local/config/config.hcl
+envsubst "$env_sub_vars" < ./vault/local/config/config.start.template.hcl > ./vault/local/config/config.start.hcl
+envsubst "$env_sub_vars" < ./vault/local/config/config.init.template.hcl > ./vault/local/config/config.init.hcl
+envsubst "$env_sub_vars" < ./vault/config/config.template.hcl > ./vault/config/config.hcl
 envsubst "$env_sub_vars" < ./scripts/initialize/vault_startup.template.sh > ./scripts/initialize/vault_startup.sh
 
 unset VAULT_PORT VAULT_CLUSTER_PORT VAULT_HOSTNAME VAULT_ADDR VAULT_CLUSTER_ADDR VAULT_SKIP_VERIFY

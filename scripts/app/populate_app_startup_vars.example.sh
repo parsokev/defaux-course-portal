@@ -48,7 +48,7 @@ export ALT_TOKEN_CRYPT_KEY=$(cat ${ALT_TOKEN_CRYPT_KEY_FILE})
 export SECRET_MOUNT_PATH=your-enabled-kv-secret-path-name
 export SECRET_PATH=path-to-kv-secret-to-accessed-for-key-value-pair-secrets
 
-# Vault Transit secret configuration settings
+# Vault Transit secret configuration settings (leave with default values if not being used)
 export TRANSIT_MOUNT_PATH=your-enabled-transit-secret-path
 export TRANSIT_KEY=path-to-transit-encryption-key-to-be-applied
 

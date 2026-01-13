@@ -92,7 +92,6 @@
         <ul class="pagination">
             {% if data['page_links'][0] %}
             {% if data['page_links'][0]['page_number'] == 'prev' %}
-            <!-- <li class="page-item"><a class="page-link" href="{{data['page_links'][0]['page_link']}}">Previous</a></li> -->
             <li class="page-item"><a class="page-link" href="{{url_for('get_courses', offset=data['page_links'][0]['offset'], limit=data['page_links'][0]['limit'])}}">Previous</a></li>
             {% else %}
             <li class="page-item disabled"><a class="page-link" >Previous</a></li>
@@ -101,15 +100,12 @@
             {% for link in data['page_links'] %}
             {% if link['page_number'] == 'prev' or link['page_number'] == 'next' %}
             {% elif link['page_number'] == active %}
-            <!-- <li class="page-item active"><a class="page-link" href="{{link['page_link']}}">{{link['page_number']}}</a></li> -->
             <li class="page-item active"><a class="page-link" href="{{url_for('get_courses', offset=link['offset'], limit=link['limit'])}}">{{link['page_number']}}</a></li>
             {% else %}
-            <!-- <li class="page-item"><a class="page-link" href="{{link['page_link']}}">{{link['page_number']}}</a></li> -->
             <li class="page-item"><a class="page-link" href="{{url_for('get_courses', offset=link['offset'], limit=link['limit'])}}">{{link['page_number']}}</a></li>
             {% endif %}
             {% endfor %}
             {% if data['page_links'][-1]['page_number'] == 'next' %}
-            <!-- <li class="page-item"><a class="page-link" href="{{data['page_links'][-1]['page_link']}}">Next</a></li> -->
             <li class="page-item"><a class="page-link" href="{{url_for('get_courses', offset=data['page_links'][-1]['offset'], limit=data['page_links'][-1]['limit'])}}">Next</a></li>
             {% else %}
             <li class="page-item disabled"><a class="page-link">Next</a></li>

@@ -113,7 +113,7 @@ Google Cloud Run API service, production hardening was introduced to this applic
  - Upon completion of recommended project setup, two distinct sets of PGP keys can be used to alternate PGP key encryption for each vault
    unseal key shard and service token. This is easily managed using SOPS and GnuPG
 
- - Runtime encryption/decryption of externally stored variables is managed using Vault Transit encryption keys
+ - The application supports the use of Vault Transit encryption keys for runtime encryption/decryption of sensitive application data 
 
  - User authentication is jointly enforced by an Auth0-managed database and a Google Cloud SQL-managed MySQL database. 
  
@@ -1438,30 +1438,28 @@ Use Vault Secrets key/value engine `kv` to generate and store key:value pairs th
 > reassigned or replacing the entire set of K/Vs as may be required during later process steps.
 
 
-### Intializing Vault Transit Secrets Engine for encrypting in-transit data using SOPS encryption tool
- 
+### Intializing Vault Transit Secrets Engine for encrypting in-transit data using SOPS encryption tool (Optional)
+
 The Vault [Secrets Transit Engine](https://developer.hashicorp.com/vault/docs/secrets/transit) can be used to encrypt transmitted data using generated encryption keys.
 
-For additional understanding of possible applications of the Vault Transit, view [](https://simplico.net/2024/10/23/securing-django-applications-with-hashicorp-vault-hvac-concepts-and-practical-examples/)
+> [!IMPORTANT]
+> **The use of the Vault Secrets Transit Engine for data encryption is not used as the primary means of transit/rest or runtime data encryption.**
+> **Instead, it provides a suite of built-in methods that server as available alternatives to the use of locally generated PGP encryption keys that**
+> **the application is preconfigured to use by default. Its use is supported but purely optional so you may skip this section if you wish to do so.**
+
+
+For additional understanding of possible applications of the Vault Transit, view [the official Vault Documentation](https://simplico.net/2024/10/23/securing-django-applications-with-hashicorp-vault-hvac-concepts-and-practical-examples/).
 
 In concert with SOPS, this can be used to encrypt and decrypt sensitive application data imported from external storage source's that may be
 printed over publicly visible elements. This is ideal for encrypting user credentials before saving them to an external database using the Vault's
 transit encryption keys and then using the same encryption key to decrypt it when needing to be displayed to the user.
 
-It is important to note that this application utilizes an Auth0-managed database to securely store user authentication credentials and thus does
-not employ vault transit keys in this manner.
-
-This application utilizes the Vault server's transit engine primarily for runtime encryption of request URL parameter data that contains sensitive user data
-that may be otherwise be publicly visible to unauthorized or unauthenticated users.
-
-SOPS can be configured to access and utilize any encryption key within the vault's transit secrets even when the vault is running within a Docker container
-by placing an external request to the Nginx reverse-proxy server that redirects the request to the Vault server container over HTTPS
+SOPS can be reconfigured to use a specified vault transit key when provided and the `utils/vault_utils.py` file includes functions that can be called
+to perform runtime encryption/decryption operations with a specified transit secret encryption key.
 
 To configure SOPS to utilize an encryption key housed within Vault server:
 
-
 1. Ensure all containerized services are running and login as the **root** user within a new shell within the Vault container
-
 
 2. Within the shell executed within the Vault container that is now authenticated as the **root user**, create three new 4096-bit RSA encrpytion keys
    within the `sops` transit secret with the path of `sops/keys/crypt-key1`, `sops/keys/crypt-key2`, and `sops/keys/crypt-key3`
@@ -1487,60 +1485,10 @@ To configure SOPS to utilize an encryption key housed within Vault server:
 
 3. Check the defined paths within the SOPS configuration file `./sops/.sops.yaml` to verify the proper URL path to the
    created encryption keys are properly declared for the encryption keys now generated within the Vault
-   sops transit secret. These will be tested in the later steps to ensure these are properly configured by SOPS
+   sops transit secret. These can be tested to ensure these are properly configured by SOPS.
 
-4. Relogin as non-root user and copy the plaintext non-root user token displayed under the user's metadata upon successful
-   authentication with the vault server.
-
-```bash
-   # Login with username and password credentials for non-root user without using '-no-print' flag to print the user's metadata
-   # including the non-root user's vault-issued access token
-   vault login -method=userpass username=your-non-root-user-username password='YournonrootuserPassword'
-   # OR
-   vault login -> Enter non-root user token directly
-```
-
-5. Locate the `./scripts/update/populate_update_vars.example.sh` script, rename it to `populate_update_vars.sh`,
-   update the assigned environment variable values, and then execute it in order to generate a new script file `./scripts/update/update_user_settings.sh`
-   that is prepopulated with the updated values for each environment variable. A general description of the required environment variables is provided below:
-
-| Variable |  Purpose |
-| --- | --- |
-| `VAULT_ADDR` | IP/Domain Address and Port Number of running Vault server (this will be the external address and port of the Nginx reverse-proxy server) |
-| `VAULT_SKIP_VERIFY` | Set to true when running initialization process, otherwise ensure this is set to false after initialization (prevent MIM attacks) |
-| `ORIGINAL_VAULT_ENV_FILE` |  Path from project root directory to env file containing SOPS-encrypted unseal keys and root user token values |
-| `EXTENDED_VAULT_ENV_FILE` | Path from project root directory to env file containing SOPS-encrypted unseal keys, root user token, AND non-root user token values |
-| `EXTENDED_ENV_ENC_FINGERPRINT` | Fingerprint of PGP key to be used for encryption of env file now updated with additional value of non-root user token value |
-
-
-6. Manually copy the decrypted non-root user token value and replace its placeholder within the now generated `./scripts/update/update_user_settings.sh`
-   script.
-
-   Manual replacement of the non-root user token placeholder value (instead of direct substitution), mitigates its potential exposure during the process of exporting it to the new shell process.
-
-```bash
-   # Within the './scripts/update/update_tokens.sh' file, replace 'your-non-root-users-token' with your non root user token
-   echo 'USER_TOKEN=your-non-root-users-token' >> $TMPFILE
-```
-
-
-7. Execute the `./scripts/update/update_user_settings.sh` script to generate an updated environment file, `EXTENDED_VAULT_ENV_FILE`,
-   which now contains the encrypted user token value assigned to the `USER_TOKEN` environment variable as well as the encrypted root token and unseal keys,
-   under their same environment variable names.
-
-```bash
-   # Example execution from project root directory using bash
-   bash ./scripts/update/update_user_settings.sh
-```
-
-   The generated environment file `EXTENDED_VAULT_ENV_FILE` will now contain the encrypted user token value assigned to the `USER_TOKEN` environment variable.
-   This file will also contain the encrypted root token and unseal keys, utilizing the same environment variable names as before. This file can now be passed to
-   a separate shell process using SOPS to safely extract the decrypted value of any desired environment variable for use in unsealing or authenticating with the Vault server. 
-
-
-7. To ensure each of three encryption keys held within the Vault servers `sops` transit secret are accessible to the non-root user,
+4. To ensure each of three encryption keys held within the Vault servers `sops` transit secret are accessible to the non-root user,
    you can enter the following set of commands to generate an environment file to test encryption/decryption using each encryption key:
-
 
 ```bash
 # Securely pass the decrypted environment variables of the .extended-vault-keys.enc.env` file within a new shell process
@@ -1584,6 +1532,61 @@ exit
 > Unsetting the exported variables within the shell process before exiting the shell above is considered optional.
 > The shell environment opened using SOPS is isolated from other processes and so any exported environment variables
 > will not be written to disk nor be reachable by any other process, including the parent process.
+
+
+### Securely Updating the Encrypted Vault Credentials File (Replacement of Root User Token with Non-Root User Token)
+
+Retaining an active root token value, encrypted or not, serves a potential security liability if accidentally exposed.
+It is best to instead replace this token value with the non-root user token for all future authentication with the vault
+server to mitigate risk of bad actors gaining root access to the vault server.
+
+1. Relogin as non-root user and copy the plaintext non-root user token displayed under the user's metadata upon successful
+   authentication with the vault server.
+
+```bash
+   # Login with username and password credentials for non-root user without using '-no-print' flag to print the user's metadata
+   # including the non-root user's vault-issued access token
+   vault login -method=userpass username=your-non-root-user-username password='YournonrootuserPassword'
+   # OR
+   vault login -> Enter non-root user token directly
+```
+
+2. Locate the `./scripts/update/populate_update_vars.example.sh` script, rename it to `populate_update_vars.sh`,
+   update the assigned environment variable values, and then execute it in order to generate a new script file `./scripts/update/update_user_settings.sh`
+   that is prepopulated with the updated values for each environment variable. A general description of the required environment variables is provided below:
+
+| Variable |  Purpose |
+| --- | --- |
+| `VAULT_ADDR` | IP/Domain Address and Port Number of running Vault server (this will be the external address and port of the Nginx reverse-proxy server) |
+| `VAULT_SKIP_VERIFY` | Set to true when running initialization process, otherwise ensure this is set to false after initialization (prevent MIM attacks) |
+| `ORIGINAL_VAULT_ENV_FILE` |  Path from project root directory to env file containing SOPS-encrypted unseal keys and root user token values |
+| `EXTENDED_VAULT_ENV_FILE` | Path from project root directory to env file containing SOPS-encrypted unseal keys, root user token, AND non-root user token values |
+| `EXTENDED_ENV_ENC_FINGERPRINT` | Fingerprint of PGP key to be used for encryption of env file now updated with additional value of non-root user token value |
+
+
+3. Manually copy the decrypted non-root user token value and replace its placeholder within the now generated `./scripts/update/update_user_settings.sh`
+   script.
+
+   Manual replacement of the non-root user token placeholder value (instead of direct substitution), mitigates its potential exposure during the process of exporting it to the new shell process.
+
+```bash
+   # Within the './scripts/update/update_tokens.sh' file, replace 'your-non-root-users-token' with your non root user token
+   echo 'USER_TOKEN=your-non-root-users-token' >> $TMPFILE
+```
+
+
+4. Execute the `./scripts/update/update_user_settings.sh` script to generate an updated environment file, `EXTENDED_VAULT_ENV_FILE`,
+   which now contains the encrypted user token value assigned to the `USER_TOKEN` environment variable as well as the encrypted root token and unseal keys,
+   under their same environment variable names.
+
+```bash
+   # Example execution from project root directory using bash
+   bash ./scripts/update/update_user_settings.sh
+```
+
+   The generated environment file `EXTENDED_VAULT_ENV_FILE` will now contain the encrypted user token value assigned to the `USER_TOKEN` environment variable.
+   This file will also contain the encrypted root token and unseal keys, utilizing the same environment variable names as before. This file can now be passed to
+   a separate shell process using SOPS to safely extract the decrypted value of any desired environment variable for use in unsealing or authenticating with the Vault server. 
 
 
 ### Setting up Automated Management of Application Credentials
@@ -1687,19 +1690,19 @@ will securely perform the intended credential rotation process.
   Cloud Platform service account with a Workload Federated Identity (WIF)).
 
 - Remember the mentioning of the required use of Google Cloud's Secret Manager in earlier sections? If so, you must be wondering when
-  its setup process would be described. Well, it starts and ends with the execution of the `rotate_app_credentials.sh` script (assuming
-  you enabled the `Secret Manager API` and assigned the specified roles to the non-root GCP service account). When the `rotate_app_credentials.sh`
+  its setup process would be described. Well, it starts and ends with the execution of the `./scripts/rotate/update_gcp_secrets.sh` script (assuming
+  you enabled the `Secret Manager API` and assigned the specified roles to the non-root GCP service account). When the `update_gcp_secrets.sh`
   script is executed, it will gather all of the Vault service's KV secrets and create/update the corresponding KV secrets within GCP's
   equivalent service, `Secret Manager`. GCP's `Secret Manager` API service will effectively replace the functions of the HashiCorp Vault service
   when the application is being externally hosted by GCP's Cloud Run API service.
 
 
-It is recommended to call these scripts immediately before restarting the application, but it is not required. **However, by default, the**
+It is recommended to call these scripts immediately before restarting the application. **By default, the**
 **generated Google OAuth2.0 access token has a set time-to-live of one hour, so you will need to call the `./scripts/rotate/rotate_app_credentials.sh`**
 **shell script if the app has not been restarted after over one hour from the last time the access token was issued.**
 
 
-The table below provides a brief description of all environment variables that must be manually updated for both shell scripts to be executed:
+The table below provides a brief description of all environment variables that must be manually updated for all three shell scripts to be executed:
 
 Vault Configuration Variables
 
@@ -1771,7 +1774,7 @@ Userpass Credentials Variables specific to `rotate_vault_credentials.sh` script
 | `PASS` | Password of vault user to be used to authenticate to the vault server |
 
 
-File Variables specific to `rotate_app_credentials.sh` script
+File Variables specific to `rotate_app_credentials.sh` and `update_gcp_secrets.sh` script
 
 | Variable | Value |
 | --- | --- |
@@ -1789,10 +1792,13 @@ Related Resources/Documentation:
 
 The following steps listed below can be completed in order to configure credential rotation scripts:
 
-1. Open the shell scripts, `./scripts/rotate/rotate_app_credentials.example.sh` and `./scripts/rotate/rotate_vault_credentials.example.sh`,
-   and update the assigned values of each environment variable found at the top of each script file according to the details provided in the above tables.
+1. Open the shell scripts, `./scripts/rotate/rotate_app_credentials.example.sh`, `./scripts/rotate/update_gcp_secrets.example.sh`, and
+   `./scripts/rotate/rotate_vault_credentials.example.sh`. Update the assigned values of each environment variable found at the top of
+   each script file according to the details provided in the above tables.
 
-2. Rename these shell script filenames to `rotate_app_credentials.sh` and `rotate_vault_credentials.sh`.
+
+2. Rename these shell script filenames to `rotate_app_credentials.sh`, `update_gcp_secrets.sh`, and `rotate_vault_credentials.sh`,
+   respectively.
 
 
 3. For each PGP key to be utilized for either encrypting the new unseal key shards or for decrypting the original unseal key shards,
@@ -1844,6 +1850,26 @@ The following steps listed below can be completed in order to configure credenti
 
    # Actual PGP keyring should be imported within the container at runtime so it can then be utilized for decryption of the vault credentials
 ```
+
+4. Before running the application locally for the first time, ensure you run the `./scripts/rotate/update_gcp_secrets.sh` file after you have
+   finished adding all necessary KV secrets to the Vault, then run the `./scripts/rotate/rotate_app_credentials.sh` file to update both the
+   Vault and GCP Secret Manager with the rotated temporary Google OAuth service token and Flask session private key values.
+
+```bash
+   # Startup standalone vault service running behind the Nginx server
+   make run-vault-service
+
+   # Open a second bash shell in a separate terminal for executing bash shell scripts
+
+   # Execute the update_gcp_secrets.sh script to add all Vault KV secrets to GCP Secret Manager (this should be only be called once instead of regularly)
+   bash ./scripts/rotate/update_gcp_secrets.sh
+
+   # Execute the rotate_app_credentials.sh script to update both Vault and GCP secrets for short-lived access token and Flask session private key 
+   bash ./scripts/rotate/rotate_app_credentials.sh
+
+   # Shutdown running vault and nginx containers
+   Ctrl+C or OS equivalent of sending SIGINT signal
+``` 
 
 
 ### Setting Up Autmomated Application Execution and Environment Configuration
@@ -2025,10 +2051,13 @@ over HTTPS and utilize SSL certificate verification (SSL verification can be dis
      the Flask server upon detecting changes to the application's files.
 
 
-Before local execution of the application under either configuration, the shell script `./scripts/rotate/rotate_app_credentials.sh` should first
-be executed locally to refresh the short-lived Google OAuth2.0 temporary access token and the private session key used to encrypt/sign 
-its current Flask server session's data. As mentioned in an earlier section, this script will also update Google Cloud's Secret Manager service
-with the updated Vault KV secrets, including the newly rotated application credentials.
+Before local execution of the application under either configuration, the shell script `./scripts/rotate/update_gcp_secrets.sh` should first
+be executed locally to update the GCP's Secret Manager with all Vault KV secrets that were added within the Vault service during the Vault setup process.
+**Under normal conditions, this script should only be required to be executed once, barring changes to what otherwise should be static values**
+
+As mentioned in an earlier section, you should also ensure you execute the `./scripts/rotate/rotate_app_credentials.sh` script to refresh the short-lived
+Google OAuth2.0 temporary access token and the Flask session private key used to encrypt/sign its current Flask server session's data. This script will
+also update the Secret Manager service's corresponding secrets with the refreshed values.
 
 You may then execute the application utilizing the appropriate preset Makefile command to execute the application within the desired environment 
 configuration.
