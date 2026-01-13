@@ -1,7 +1,7 @@
 # Project Description
 
 This project leverages the use of the Google Cloud Platform (GCP) to provide a deployable cloud-based application that serves as a mock
-college course managment portal. Its current main functionalities include:
+college course managment portal. Its current functionalities include:
 
   - Customizable user account profiles that display the full list of all user-associated courses and
     a personalized avatar image that can be updated by uploading a new local image file
@@ -22,35 +22,43 @@ college course managment portal. Its current main functionalities include:
 
 This application was designed with the intention to:
 
- 1. Serve as a template and potential resource for developing web-based applications within a production-hardened environment
-    that allows for the safe management of sensitive application data.
+ 1. Serve as a template and resource for developers wishing to build web-based applications within a production-hardened environment
+    that allows for the safe management of sensitive application data on their local machine.
     
  2. Provide a pre-built, user-friendly development environment that allows for quickly alternating between different environment
     configurations (such as development, production, and deployment), and automation of local application setup and
     maintenance.
   
  3. Deliver an application that can be readily deployed as a cloud-based service in a secure and production-ready state using
-    Google Cloud Platform's (GCP) Cloud Run API without requiring the outright purchase of any subscription-based or starting service costs
-    (completely free for any user able to create a new Google Cloud Platform account or less than $10 for any user with an existing account).
+    Google Cloud Platform's (GCP) Cloud Run API without requiring the outright purchase of any subscription-based or starting service costs.
+    Due to the provision of $300 of credits when creating a new Google Cloud Platform account, this should be free for the majority of users.
+    For those with an existing GCP account, the entire project development timespan, from the point of project creation to deployment, required
+    a total estimated use of approximately $10 worth of credits.
 
 
-## Project Overview
+**As it will become quickly apparent, this README was written as a comprehensive, in-depth instruction manual for setting up the entire application.**
+**It is absurdly long and made the writer question his sanity at multiple points in the writing of this monstrosity.**
+Each section will attempt to explain its intended purpose/goal and provide clearly outlined step-by-step instructions to ensure readers of ranging
+experience levels are able to successfully complete the application setup process. Links to official resources are provided where deemed necessary
+to provide solutions for common problems that might be encountered along the way. At its core, the development of this application was intended to serve
+as a stepping stone for users who wish to build modern cloud applications on a budget, without the required use of premium subscription-based software.
+
+
+# Project Overview
 
 This is a web-based application that utilizes:
 
    - Docker Compose and GNU Make to configure the environment and execution settings of the following containerized services
-     within an internal Docker network when locally hosting the application:
+     within an internal Docker network when hosting the application on a local machine:
 
-       1. A Flask API server that is executed using Gunicorn for optimizing server performance and potential scalability for use
-          when locally hosting and, more importantly, when hosted by Google Cloud Run as a deployed service.
-
+       1. A Flask API server that is executed using Gunicorn to provide optimal server performance when hosted on a local machine and,
+          more importantly, when hosted by Google Cloud Run as a deployed service that is publicly accessible.
 
        2. A HashiCorp Vault server that is used to store application credentials and provide runtime encryption/decryption services when
-          application is hosted on local machine
-
+          the application is hosted on a local machine.
 
        3. A Nginx reverse-proxy server to handle redirection of external HTTP requests to the appropriate containerized application service
-          over TLS-secured HTTPS endpoints and provide load balancing when application is hosted on a local machine.
+          over TLS-secured HTTPS endpoints and provide load balancing when the application is hosted on a local machine.
 
    - Relatively modern production-hardening practices when hosting the application on a local machine to mitigate potential exposure of
      sensitive application data necessary for application functionality, such as Google Cloud authentication credentials including:
@@ -106,9 +114,9 @@ Google Cloud Run API service, production hardening was introduced to this applic
 
    - Reissuing of short-lived Google OAuth2.0 Service Tokens used by application to authenticate to Google Cloud API services
 
-      - Use of a GCP Workload Identity Pool (form of Workload Federated Identity) that utilizes Auth0 as an external OIDC pool provider to
-        produce short-lived Google Auth2.0 service tokens implemented via REST HTTP API or Gcloud CLI tool without requiring direct inclusion
-        of an ADC credentials file within the deployed (or locally-hosted container) application. 
+      - Use of a GCP Workload Identity Pool (form of Workload Federated Identity) that utilizes Auth0 as an external OIDC (OpenID Connect)
+        pool provider to produce short-lived Google Auth2.0 service tokens implemented via REST HTTP API or Gcloud CLI tool without
+        requiring direct inclusion of an ADC credentials file within the deployed (or locally-hosted container) application. 
 
  - Upon completion of recommended project setup, two distinct sets of PGP keys can be used to alternate PGP key encryption for each vault
    unseal key shard and service token. This is easily managed using SOPS and GnuPG
@@ -118,15 +126,16 @@ Google Cloud Run API service, production hardening was introduced to this applic
  - User authentication is jointly enforced by an Auth0-managed database and a Google Cloud SQL-managed MySQL database. 
  
  - Application-scope (Google Cloud API services) authentication/authorization is enforced with short-lived Google OAuth2.0 service tokens generated from the 
-   workload federated identity (WIF) tied to the authenticated GCP service account (Auth0 is serves as the external OIDC provider)
+   workload federated identity (WIF) tied to the authenticated GCP service account
 
 
-> [!NOTE]
-> This project is currently considered to be in an unfinished state and no longer under active development. There are several
-> planned (currently incomplete) additions such as local testing suites, Google's Artifact Registry-compatible CI/CD workflows,
-> and other conventional application development features found in traditional development environments that are currently absent.
-> This would also extend to quality-of-life improvements such as more responsive UI elements and additional UX/accessibility features.
-> It is still planned to resume development at a future time and date when possible.
+> [!IMPORTANT]
+> While the application in its current state satifies all of the criteria covered in the project description and initial project overview
+> sections of this README, this application is considered to be unfinished. There are several in-development additions such as
+> local testing suites, Google's Artifact Registry-compatible CI/CD workflows, and other conventional application development features
+> that exist but require significant expansion before being suitable for use in application status check workflows.
+> Quality-of-life improvements such as more responsive UI elements and additional UX/accessibility features are also planned in future
+> additions.
 
 
 # Project Setup Overview
@@ -162,13 +171,10 @@ for request verification/authorization purposes, connection authorization purpos
 
 > [!CAUTION]
 > ***The outlined project setup utilizes the most basic configuration settings available in order to reduce the total operational costs***
-> ***of running the application and is NOT intended for use in active production***.
+> ***of running the application and is NOT intended for use if anticipating high traffic volumens. In such cases, the hardware specifications should***
+> ***upgraded accordingly***.
 > 1. Additional time will be required to complete startup and shutdown of all databases and virtual machine instances utilized to run the application.
-> 2. It will also reduce data storage capacity and disables data backup protection.
-> 3. While the instance connection security configurations outlined by this project setup are sufficient for development purposes, many additional
->    security measures/services recommended for production are not enabled or fully utilized. It is recommended to introduce additional security
->    measures/services suggested by GCP to harden connection security and mitigate potential compromise of authentication credentials.  
-
+> 2. It will also reduce data storage capacity and disables data backup protection.  
 
 1. Create new account (billing must be enabled)
 
