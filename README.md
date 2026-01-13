@@ -35,13 +35,13 @@ This application was designed with the intention to:
     For those with an existing GCP account, the entire project development timespan, from the point of project creation to deployment, required
     a total estimated use of approximately $10 worth of credits.
 
-
-**As it will become quickly apparent, this README was written as a comprehensive, in-depth instruction manual for setting up the entire application.**
-**It is absurdly long and made the writer question his sanity at multiple points in the writing of this monstrosity.**
-Each section will attempt to explain its intended purpose/goal and provide clearly outlined step-by-step instructions to ensure readers of ranging
-experience levels are able to successfully complete the application setup process. Links to official resources are provided where deemed necessary
-to provide solutions for common problems that might be encountered along the way. At its core, the development of this application was intended to serve
-as a stepping stone for users who wish to build modern cloud applications on a budget, without the required use of premium subscription-based software.
+> [!NOTE]
+> **As it will become quickly apparent, this README was written as a comprehensive, in-depth instruction manual for setting up the entire application.**
+> **It is absurdly long and made the writer question his sanity at multiple points in the writing of this monstrosity.**
+> Each section will attempt to explain its intended purpose/goal and provide clearly outlined step-by-step instructions to ensure readers of ranging
+> experience levels are able to successfully complete the application setup process. Links to official resources are provided where deemed necessary
+> to provide solutions for common problems that might be encountered along the way. At its core, the development of this application was intended to serve
+> as a stepping stone for users who wish to build modern cloud applications on a budget, without the required use of premium subscription-based software.
 
 
 # Project Overview
@@ -140,18 +140,9 @@ Google Cloud Run API service, production hardening was introduced to this applic
 
 # Project Setup Overview
 
-This project requires an active Google Cloud Platform (GCP) account with access to:
+This project requires an active Google Cloud Platform (GCP) account in order to complete the application setup and deployment process.
 
- - GCP's Artifact Registry if wishing to deploy the application as a Docker image built from the provided Dockerfile
-
- - GCP's Cloud Run if wishing to have the running application hosted over an external IP address (instead of locally-hosting) 
-   and have access to a running instance of a MySQL database using Cloud SQL
-
-For first-time GCP users creating a GCP account, $300 of credit will be awarded to mitigate operation costs for first several months.
-
-
-This project also requires additional GCP account setup steps to be completed in order to enable use of both Google's Cloud Run and Artifact Registry
-by the application which can accomplished by following the linked guides:
+You may refer to the following links throughout the configuring of the different GCP API services if encountering any problems:
 
  - [Setting up the application using GCP's Cloud Run](https://docs.cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service)
 
@@ -161,8 +152,11 @@ by the application which can accomplished by following the linked guides:
 
  - [Configure and Establishing a Connection to a MySQL database instance using Cloud SQL](http://cloud.google.com/sql/docs/mysql/connect-app-engine-standard)
 
-As a final required configuration step, the user must generate and store several sets of credential and environment variables
-for request verification/authorization purposes, connection authorization purposes, and Container image environment setup purposes.
+
+For first-time GCP users creating a GCP account is essentially free with $300 of credit being provided to mitigate operation costs for
+the first several months of account use. For those that must use an existing GCP account, all setup steps target the lowest cost options
+available when configuring the required GCP API services. This should result in less than $10 to operate the deployed service for 
+approximately an entire month.
 
 
 # Setting up Google Cloud Account, Project, and Required Cloud API Services
@@ -171,10 +165,14 @@ for request verification/authorization purposes, connection authorization purpos
 
 > [!CAUTION]
 > ***The outlined project setup utilizes the most basic configuration settings available in order to reduce the total operational costs***
-> ***of running the application and is NOT intended for use if anticipating high traffic volumens. In such cases, the hardware specifications should***
+> ***of running the application and is NOT intended for use if anticipating high traffic volume. In such cases, the hardware specifications should***
 > ***upgraded accordingly***.
-> 1. Additional time will be required to complete startup and shutdown of all databases and virtual machine instances utilized to run the application.
-> 2. It will also reduce data storage capacity and disables data backup protection.  
+> 1. Additional time will be required to complete startup and shutdown of all databases as well as initial statup times for deployed service instances.
+> 2. It will also reduce data storage capacity and disables data backup protection. 
+
+First, you must create a new GCP project with your newly created GCP account and configure it to use this project as your quota project:
+
+You may reference the [Get Started documentation](https://developers.google.com/workspace/guides/create-project) if unfamiliar with the Google Cloud Console
 
 1. Create new account (billing must be enabled)
 
@@ -199,7 +197,7 @@ for request verification/authorization purposes, connection authorization purpos
 ## Setting up Required Google Cloud App Services
 
 After the initial Google Cloud account and project have been successfully created/configured, you can now begin the initial setup
-of the two main Google Cloud API services utilized by the application:
+of the three main Google Cloud API services utilized by the application (Cloud Run will be detailed later in the setup process):
 
 1. [Google Cloud SQL using MySQL](https://docs.cloud.google.com/sql/docs/mysql?_gl=1*zy5sux*_up*MQ..&gclid=EAIaIQobChMIgYiihe_AkQMVzCFECB1LlQO2EAAYASAAEgJzKvD_BwE&gclsrc=aw.ds)
 
@@ -367,9 +365,9 @@ from `#!/usr/bin/env bash` to `#!/opt/homebrew/bin/bash` to successfully execute
 
 **Non-Debian/Non-Ubuntu Linux Distribution Users:**
 In order to ensure widespread compatibility, bash shell commands used by the shell scripts use Debian Linux commands. While the majority
-of commands should be compatible with most Linux distributions, each of the scripts should be reviewed before executing them to ensure one or more
-incompatible commands result in failure (if you are using other Linux distributions, the shell scripts will most likely be considered fairly straightforward
-and easy to adjust where necessary)
+of commands should be compatible with most Linux distributions, each of the scripts should be reviewed before executing them to ensure thar any
+incompatible commands that may result in failure are updated (if you are using other Linux distributions, these shell scripts will most likely be
+considered fairly straightforward and easy to adjust where necessary)
 
 
 ### Installing Globally Required Application Dependencies 
@@ -378,7 +376,7 @@ This application utilizes an internally networked suite of Docker container serv
 to coordinate the full application startup sequence.
 
 To streamline the application startup process, the application utilizes a Makefile to allow a user to launch the
-full application under environment configurations using preset commands defined within this Makefile.
+full application under a variety of different environment configurations using preset commands defined within this Makefile.
 
 Finally, this application utilizes Python3 to create a virtual environment and install application dependencies
 within this virtual environment for use by shell scripts that automate the local application setup process.
@@ -546,9 +544,11 @@ The following steps must be completed in order to ensure both the application an
     requests to gain authorized access to user data at Auth0 Managment API secured endpoints.
 
     To learn more you may visit the official REST API documentation for Auth0 Auth Management API:
-      [Get User Roles in using Auth0 Management API endpoint](https://auth0.com/docs/api/management/v2/users/get-user-roles#scopes)
-      [Using Client Credentials Flow for Authenticating to Auth0 Management API](https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow/call-your-api-using-the-client-credentials-flow)
-      [Using User Roles for User Authentication using Auth0 Management API](https://auth0.com/docs/get-started/apis/enable-role-based-access-control-for-apis)
+      - [Get User Roles in using Auth0 Management API endpoint](https://auth0.com/docs/api/management/v2/users/get-user-roles#scopes)
+
+      - [Using Client Credentials Flow for Authenticating to Auth0 Management API](https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow/call-your-api-using-the-client-credentials-flow)
+
+      - [Using User Roles for User Authentication using Auth0 Management API](https://auth0.com/docs/get-started/apis/enable-role-based-access-control-for-apis)
 
 
 12. To complete the registration of the default admin user, several key identifiers for the default admin user must also be directly added
@@ -614,13 +614,13 @@ This is can serve as a potential source for gaining entry to the service account
 deployed.
 
 
-### Configuring an OIDC-based Workload Identity Federation (WIF) for Google Cloud
+### Configuring an OIDC (OpenID Connect)-based Workload Identity Federation (WIF) for Google Cloud
 
 Creating a Workload Identity Federation (WIF) via Google Cloud's Workload Identity Pool provides a more secure way of authenticating
 to Google Cloud by allowing a Google OAuth2.0 Service access token to impersonate an authorized Google Cloud service account.
 This token can then be provided in place of the service account credentials file for authenticating to any all Google Cloud API services.
 
-Due to complicated and in-depth nature of configuring a new workload identity pool with Auth0,
+Due to the complicated and in-depth nature of configuring a new workload identity pool with Auth0,
 the step-by-step instructions for this setup are not explicitly outlined here but rather deferred to instructions
 listed within this [gist post by Wilfred van der Deijl](https://gist.github.com/wvanderdeijl/95f511d4f2749b8b6ad38c26f27da251#preparation)
 as they are were found to be impressively concise and straightforward in describing the necessary steps involved.
@@ -747,7 +747,7 @@ While not required, it is recommended to generate a second set of four PGP keys 
 
 4. Export each generated PGP key's public key as a base64-encoded file using each PGP key's unique fingerprint (.b64.gpg)
 
-https://developer.hashicorp.com/vault/docs/concepts/pgp-gpg-keybase#initializing-with-pgp
+[A Helpful Resource for understanding the vault initialization process with PGP keys](https://developer.hashicorp.com/vault/docs/concepts/pgp-gpg-keybase#initializing-with-pgp)
 
 These will be passed to the vault within the vault initialization command, specifying the relative path to
 the public key file of the desired PGP key to encrypt the specified unseal key or vault token value.
@@ -1012,7 +1012,7 @@ tokens or various types of credentials.
 ### Generating a Self-Signed Certificate to Enable TLS (non-CA-CERT)
 
 In order to enable use of TLS encrypted connections between the Flask server, Nginx reverse-proxy server,
-and the Vault server when locally-hosting the application, a self-signed certicate and key can be provided
+and the Vault server when hosting the application on a local machine, a self-signed certicate and key can be provided
 in place of an official certificate issued by the Certificate Authority (CA).
 
 This article by Brad Touesnard for a [great overview of SSL certificates](https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/)
@@ -1038,7 +1038,7 @@ This article by Brad Touesnard for a [great overview of SSL certificates](https:
 
 2. Verify your generated certificate file and private key files are placed within the appropriate file directories for different Docker Compose files:
 
-    - Within the `docker-compose.init.yml` file under the `vault-store` service's `volumes` section:
+    - Within the `docker-compose.init.yml` file, under the `vault-store` service's `volumes` section:
 
        - The local file path to your self-signed certificate file should be `./vault/local/certs/your-vault-ssl-certificate-filename.pem`
       
@@ -1049,7 +1049,7 @@ This article by Brad Touesnard for a [great overview of SSL certificates](https:
        - The local file path to your initialized vault's mounted `config` directory should be `./vault/local/config`
 
 
-    - Within the `docker-compose.vault.yml` file under the `vault-store` service's `volumes` section:
+    - Within the `docker-compose.vault.yml` file, under the `vault-store` service's `volumes` section:
 
        - The local file path to your self-signed certificate file should be `./vault/local/certs/your-vault-ssl-certificate-filename.pem`
       
@@ -1058,7 +1058,7 @@ This article by Brad Touesnard for a [great overview of SSL certificates](https:
        - The local file path to your mounted `config` directory should be `./vault/config`
 
 
-    - Within the `docker-compose.local.yml` under the `vault-store` service's `volumes` section:
+    - Within the `docker-compose.local.prod.yml` and `docker-compose.local.dev.yml` files, under the `vault-store` service's `volumes` section:
 
        - The local file path to your self-signed certificate file should be `./vault/certs/your-vault-ssl-certificate-filename.pem`
 
@@ -1126,16 +1126,16 @@ Vault Configuration Variables
 > This is due to the need to either open a shell directly within the running Vault container or running the Vault server as a local process (instead of within
 > an internally networked container). In both of these situations, the SSL verification process will be unable to properly certify the SSL certificates so this
 > must be disabled for these operations.
-> However, after completion of these steps, all future use of Vault will be executed using `make run-vault-service` or `make run-local-app-services`, which
-> will set `VAULT_SKIP_VERIFY` set to `false` and properly enforces SSL certificate verification. If this fails, ensure you have properly configured
-> your SSL certificate paths and properly set the address extensions when creating the certificate and private key files.
+> However, after completion of these steps, all future use of Vault will be executed using `make run-vault-service`, `make run-local-prod-app`, or
+> `make run-local-dev-app`, with `VAULT_SKIP_VERIFY` set to `false` to enforce SSL certificate verification. If this fails, ensure you have properly
+> configured your SSL certificate paths and properly set the address extensions when creating the certificate and private key files.
 
 
 SOPS Configuration Variables
 
 | Variable | Value |
 | --- | --- |
-| `TMP_FILE` | Asigned name for temporary file (introduces additional randomness to naming of temporary file used in env values during reencryption operations) |
+| `TMP_FILE` | Assigned name for temporary file (introduces additional randomness to naming of temporary file used in env values during reencryption operations) |
 | `SOPS_CONFIG_FILE` | Path from project root directory to desired sops configuration file  |
 
 PGP Encryption Configuration Variables
@@ -1226,7 +1226,7 @@ If unsure about the application of the PGP key files see the Vault documentation
 12. Open a second terminal, ***(do not close and kill the running process in the first)***, and execute a new shell within the running
     Vault container by entering the following command into the second terminal:
 
-   `docker exec -it vault-store /bin/sh`
+    `docker exec -it vault-store /bin/sh`
 
 
 13. Open a third terminal ***(do not close or kill the running processes in either the first or the second terminals)***, and enter the command listed
@@ -1438,13 +1438,12 @@ Use Vault Secrets key/value engine `kv` to generate and store key:value pairs th
    vault kv get dev-secrets/creds
 ```
 
-> [!IMPORTANT]
-> The list of key/values are the sum total of ALL of key/value secrets utilized by the application. Do not attempt to fill these values now.
-> Each of these key/value pairs will be explained in further detail in later sections. However, this can be utilized as a template when
-> reassigned or replacing the entire set of K/Vs as may be required during later process steps.
+> [!TIP]
+> The list of key/values are the sum total of ALL of key/value secrets utilized by the application. This can be utilized as a template when
+> reassigned or replacing the entire set of K/Vs as may be required during setup process or later maintenance steps.
 
 
-### Intializing Vault Transit Secrets Engine for encrypting in-transit data using SOPS encryption tool (Optional)
+### Intializing Vault Transit Secrets Engine for encrypting in-transit data using SOPS (Optional)
 
 The Vault [Secrets Transit Engine](https://developer.hashicorp.com/vault/docs/secrets/transit) can be used to encrypt transmitted data using generated encryption keys.
 
@@ -1632,10 +1631,11 @@ decrypted/decoded unseal key shards and encryption method (PGP key or OTP) to be
 >
 > Additionally, the appropriate shell scripts that requires this functionality will ensure the generated root token only exists in memory, is never
 > written to the disk and is automatically revoked upon finishing execution.
->
-> Visit the following links if wishing to know more:
-> [Generating a New Vault Root Token using Vault CLI](https://developer.hashicorp.com/vault/docs/commands/operator/generate-root) 
-> [Troubleshooting Vault Root Token Regeneration](https://developer.hashicorp.com/vault/docs/troubleshoot/generate-root-token)
+
+Visit the following links if wishing to know more about how Vault handles Root User Tokens:
+ - [Generating a New Vault Root Token using Vault CLI](https://developer.hashicorp.com/vault/docs/commands/operator/generate-root)
+ 
+ - [Troubleshooting Vault Root Token Regeneration](https://developer.hashicorp.com/vault/docs/troubleshoot/generate-root-token)
 
 
 The following code snippet provided below is an example of how to revoke the initial root token via the standalone vault configuration
