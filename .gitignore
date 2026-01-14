@@ -42,3 +42,6 @@ pgp_config/img_keys/*
 /vault/local/certs/*
 /vault/local/config/config.start.hcl
 /vault/local/config/config.init.hcl
+.github/workflows/
+/test/integration/*
+/test/unit/*
